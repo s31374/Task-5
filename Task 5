@@ -1,0 +1,165 @@
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+class Learner {
+    private static int nextID = 1;
+    private int ID;
+    private String firstName;
+    private String lastName;
+    private Date birthDate;
+    private String email;
+    private String address;
+    private String phoneNumber;
+    private String status;
+    private List<Academics> academicsList;
+    private List<Performance> performanceList;
+
+    public Learner(String firstName, String lastName, String email, String address, String phoneNumber, Date birthDate) {
+        this.ID = nextID++;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.birthDate = birthDate;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        this.status = "Preliminary";
+        this.academicsList = new ArrayList<>();
+        this.performanceList = new ArrayList<>();
+    }
+
+    public void enroll(Academics academics) {
+        academicsList.add(academics);
+    }
+
+    public void addScore(int score, String subject) {
+        performanceList.add(new Performance(score, subject));
+    }
+
+    public void advance() {
+        for (Academics academics : academicsList) {
+            if (academics.getProgram().equals("Computer Science")) {
+                int itCount = 0;
+                for (Performance performance : performanceList) {
+                    if (performance.getSubject().equals("Computer Science")) {
+                        itCount++;
+                    }
+                }
+                if (itCount >= academics.getMaxITAllowed()) {
+                    System.out.println("This learner has reached the maximum allowed IT courses.");
+                    return;
+                }
+            }
+            if (academics.getSemesters() > getCurrentSemester()) {
+                setCurrentSemester(getCurrentSemester() + 1);
+            } else {
+                setStatus("Graduated");
+            }
+        }
+    }
+
+    public void info() {
+        System.out.println("Name: " + firstName + " " + lastName);
+        System.out.println("ID: " + ID);
+        System.out.println("Birth Date: " + birthDate);
+        System.out.println("Email: " + email);
+        System.out.println("Address: " + address);
+        System.out.println("Phone Number: " + phoneNumber);
+        System.out.println("Current Semester: " + getCurrentSemester());
+        System.out.println("Status: " + status);
+        System.out.println("Studies:");
+        for (Academics academics : academicsList) {
+            System.out.println("- " + academics.getProgram());
+        }
+    }
+
+    public int getCurrentSemester() {
+        int maxSemester = 0;
+        for (Academics academics : academicsList) {
+            if (academics.getSemesters() > maxSemester) {
+                maxSemester = academics.getSemesters();
+            }
+        }
+        return maxSemester;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCurrentSemester(int currentSemester) {
+        this.status = "Enrolled";
+    }
+}
+
+class Academics {
+    private String program;
+    private String description;
+    private int semesters;
+    private int maxITAllowed;
+
+    public Academics(String program, String description, int semesters, int maxITAllowed) {
+        this.program = program;
+        this.description = description;
+        this.semesters = semesters;
+        this.maxITAllowed = maxITAllowed;
+    }
+
+    public String getProgram() {
+        return program;
+    }
+
+    public int getSemesters() {
+        return semesters;
+    }
+
+    public int getMaxITAllowed() {
+        return maxITAllowed;
+    }
+}
+
+class Performance {
+    private int score;
+    private String subject;
+
+    public Performance(int score, String subject) {
+        this.score = score;
+        this.subject = subject;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+}
+
+class LearnerManager {
+    private static List<Learner> learnerList = new ArrayList<>();
+
+    public static void advanceAll() {
+        for (Learner learner : learnerList) {
+            learner.advance();
+        }
+    }
+
+    public static void showAllInfo() {
+        for (Learner learner : learnerList) {
+            learner.info();
+        }
+    }
+
+    public static void addLearner(Learner learner) {
+        learnerList.add(learner);
+    }
+}
